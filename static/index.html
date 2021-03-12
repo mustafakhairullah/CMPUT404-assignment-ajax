@@ -39,7 +39,7 @@
             try {
               if (xhr.status == 200) {
                 var parsed_data = JSON.parse(xhr.responseText);
-                //console.log(callback(data));
+                //console.log(callback.)
                 callback(parsed_data);
               }
             } catch (e) {
@@ -51,15 +51,15 @@
         //XXX: set the mimetype and the accept headers!
         // Remember to use application/json !
 
-        //POSTing to a URL
+        //POSTing the url
         xhr.open("POST", url);
 
-        //Setting content headers and mime types
-        xhr.setRequestHeader("Content-type", "application/json");
+        //Setting response headers and mimetypes
+        xhr.setRequestHeader("Content-Type", "application/json");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.overrideMimeType("application/json");
 
-        //sending the json string
+        //Sending back the object as a JSON
         xhr.send(JSON.stringify(objects));
       }
 
@@ -69,7 +69,7 @@
       function drawCircle(context, entity) {
         with (context) {
           beginPath();
-          lineWidth = 3;
+          lineWidth = 5;
           var x = entity["x"];
           var y = entity["y"];
           //moveTo(x,y);
@@ -100,7 +100,7 @@
       function clearFrame() {
         with (context) {
           moveTo(0, 0);
-          fillStyle = "#000";
+          fillStyle = "black";
           fillRect(0, 0, W, H);
         }
       }
@@ -151,9 +151,11 @@
 
       function addEntity(entity, data) {
         world[entity] = data;
+        url = `/entity/${data}`;
         drawNextFrame(); // (but should we?)
+
         //XXX: Send a XHTML Request that updates the entity you just  modified!
-        sendJSONXMLHTTPRequest(`/entity/${data}`, data, function () {});
+        sendJSONXMLHTTPRequest(url, data, function () {});
       }
 
       var counter = 0;
@@ -262,23 +264,26 @@
       // Add the application specific mouse listeners!
       //XXX: TODO Make these prettier!
       mouse.mousedowners.push(function (x, y, clicked, e) {
-        addEntityWithoutName({ x: x, y: y, colour: "blue" });
+        addEntityWithoutName({ x: x, y: y, colour: "yellow" });
       });
 
       mouse.mouseuppers.push(function (x, y, clicked, e) {
-        addEntityWithoutName({ x: x, y: y, colour: "red" });
+        addEntityWithoutName({ x: x, y: y, colour: "white" });
       });
 
       mouse.mousedraggers.push(function (x, y, clicked, e) {
-        addEntityWithoutName({ x: x, y: y, colour: "green", radius: 10 });
+        addEntityWithoutName({ x: x, y: y, colour: "blue", radius: 10 });
       });
 
       function update() {
         //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-        sendJSONXMLHTTPRequest(url, objects, function (json) {
+        objects = {
+          method: "GET",
+        };
+        sendJSONXMLHTTPRequest("/world", objects, function (json) {
           world = json;
-          drawFrame();
         });
+        drawFrame();
       }
 
       // 30 frames per second
